@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>dePOSit — Restaurant POS System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #F5F0E8;
+      --dark: #1A1208;
+      --amber: #C8843A;
+      --amber-light: #E6A55A;
+      --muted: #7A6E60;
+      --card-bg: #FFFFFF;
+      --border: #E2D9CC;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--cream);
+      color: var(--dark);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 48px;
+      background: rgba(245, 240, 232, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem; font-weight: 700;
+      color: var(--dark); text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .nav-logo span { color: var(--amber); }
+    .nav-cta {
+      background: var(--dark); color: var(--cream);
+      padding: 10px 22px; border-radius: 6px;
+      font-size: 0.85rem; font-weight: 500;
+      text-decoration: none; letter-spacing: 0.3px;
+      transition: background 0.2s;
+    }
+    .nav-cta:hover { background: var(--amber); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 120px 48px 80px;
+      gap: 60px;
+    }
+    .hero-text { max-width: 560px; }
+    .hero-badge {
+      display: inline-block;
+      background: var(--amber);
+      color: #fff;
+      font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 6px 14px; border-radius: 4px;
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 5vw, 4.2rem);
+      font-weight: 900; line-height: 1.1;
+      letter-spacing: -1px;
+      margin-bottom: 20px;
+    }
+    .hero h1 em { color: var(--amber); font-style: italic; }
+    .hero p {
+      font-size: 1.05rem; color: var(--muted);
+      line-height: 1.75; margin-bottom: 36px;
+      max-width: 460px;
+    }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--dark); color: var(--cream);
+      padding: 14px 28px; border-radius: 8px;
+      font-size: 0.95rem; font-weight: 500;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { background: var(--amber); transform: translateY(-1px); }
+    .btn-secondary {
+      background: transparent; color: var(--dark);
+      padding: 14px 28px; border-radius: 8px;
+      font-size: 0.95rem; font-weight: 500;
+      text-decoration: none; border: 1.5px solid var(--border);
+      transition: border-color 0.2s, transform 0.15s;
+    }
+    .btn-secondary:hover { border-color: var(--amber); transform: translateY(-1px); }
+
+    /* Hero image placeholder */
+    .hero-visual {
+      position: relative;
+      border-radius: 20px; overflow: hidden;
+      aspect-ratio: 4/3;
+      background: var(--dark);
+      box-shadow: 0 40px 80px rgba(26,18,8,0.18);
+    }
+    .hero-visual img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+    }
+    .img-placeholder {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 12px; color: var(--muted);
+      background: #2A1F12;
+    }
+    .img-placeholder svg { opacity: 0.4; }
+    .img-placeholder span { font-size: 0.8rem; opacity: 0.5; letter-spacing: 1px; text-transform: uppercase; }
+    .hero-visual .float-badge {
+      position: absolute; bottom: 20px; left: 20px;
+      background: rgba(245,240,232,0.95);
+      border-radius: 10px; padding: 12px 16px;
+      display: flex; align-items: center; gap: 10px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    .float-badge-dot { width: 8px; height: 8px; border-radius: 50%; background: #22C55E; }
+    .float-badge-text { font-size: 0.78rem; font-weight: 500; color: var(--dark); }
+
+    /* ── STATS ── */
+    .stats {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1px; background: var(--border);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .stat {
+      background: var(--cream);
+      padding: 40px 48px;
+      text-align: center;
+    }
+    .stat-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.6rem; font-weight: 900;
+      color: var(--amber); line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-label { font-size: 0.85rem; color: var(--muted); letter-spacing: 0.3px; }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: 100px 48px;
+      max-width: 1200px; margin: 0 auto;
+    }
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-eyebrow {
+      font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--amber); margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 3.5vw, 2.8rem);
+      font-weight: 700; line-height: 1.2;
+      letter-spacing: -0.5px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .feature-card:hover {
+      box-shadow: 0 12px 40px rgba(26,18,8,0.08);
+      transform: translateY(-3px);
+    }
+    .feature-icon {
+      width: 44px; height: 44px;
+      background: var(--cream);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 18px;
+      font-size: 1.3rem;
+    }
+    .feature-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem; font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .feature-card p { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
+
+    /* ── SCREENSHOTS ── */
+    .screenshots { padding: 80px 48px; background: var(--dark); }
+    .screenshots .section-title { color: var(--cream); }
+    .screenshots .section-eyebrow { color: var(--amber-light); }
+    .screenshots-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 16px;
+      margin-top: 48px;
+      max-width: 1200px; margin-left: auto; margin-right: auto;
+    }
+    .screenshot-item {
+      border-radius: 12px; overflow: hidden;
+      aspect-ratio: 16/10;
+      background: #2A1F12;
+      position: relative;
+    }
+    .screenshot-item img { width: 100%; height: 100%; object-fit: cover; }
+    .screenshot-item .img-placeholder { background: #2A1F12; }
+    .screenshot-item.tall { grid-row: span 2; aspect-ratio: auto; }
+
+    /* ── PRICING ── */
+    .pricing {
+      padding: 100px 48px;
+      max-width: 1000px; margin: 0 auto;
+      text-align: center;
+    }
+    .pricing-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 48px;
+      text-align: left;
+    }
+    .pricing-card {
+      border: 1.5px solid var(--border);
+      border-radius: 16px; padding: 36px;
+      background: var(--card-bg);
+    }
+    .pricing-card.featured {
+      border-color: var(--amber);
+      background: var(--dark); color: var(--cream);
+    }
+    .pricing-card .plan-name {
+      font-size: 0.8rem; font-weight: 500;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--amber); margin-bottom: 12px;
+    }
+    .pricing-card .price {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem; font-weight: 900;
+      line-height: 1; margin-bottom: 6px;
+    }
+    .pricing-card .price-sub {
+      font-size: 0.82rem; color: var(--muted);
+      margin-bottom: 28px;
+    }
+    .pricing-card.featured .price-sub { color: #9A8E80; }
+    .pricing-card ul { list-style: none; margin-bottom: 32px; }
+    .pricing-card ul li {
+      font-size: 0.88rem; padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .pricing-card.featured ul li { border-bottom-color: #2A1F12; }
+    .pricing-card ul li::before { content: "✓"; color: var(--amber); font-weight: 700; }
+    .btn-plan {
+      display: block; text-align: center;
+      padding: 13px; border-radius: 8px;
+      font-size: 0.9rem; font-weight: 500;
+      text-decoration: none;
+      border: 1.5px solid var(--dark); color: var(--dark);
+      transition: all 0.2s;
+    }
+    .btn-plan:hover { background: var(--dark); color: var(--cream); }
+    .pricing-card.featured .btn-plan {
+      background: var(--amber); border-color: var(--amber); color: #fff;
+    }
+    .pricing-card.featured .btn-plan:hover { background: var(--amber-light); border-color: var(--amber-light); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark); color: var(--cream);
+      padding: 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid #2A1F12;
+      flex-wrap: wrap; gap: 16px;
+    }
+    footer .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem; font-weight: 700;
+    }
+    footer .footer-logo span { color: var(--amber); }
+    footer p { font-size: 0.82rem; color: #6A5E50; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero-text > * {
+      animation: fadeUp 0.6s ease both;
+    }
+    .hero-text > *:nth-child(1) { animation-delay: 0.1s; }
+    .hero-text > *:nth-child(2) { animation-delay: 0.2s; }
+    .hero-text > *:nth-child(3) { animation-delay: 0.3s; }
+    .hero-text > *:nth-child(4) { animation-delay: 0.4s; }
+    .hero-visual { animation: fadeUp 0.7s 0.3s ease both; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 16px 24px; }
+      .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; text-align: center; }
+      .hero p { margin-left: auto; margin-right: auto; }
+      .hero-actions { justify-content: center; }
+      .hero-visual { max-width: 500px; margin: 0 auto; }
+      .stats { grid-template-columns: 1fr; }
+      .features { padding: 60px 24px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .screenshots { padding: 60px 24px; }
+      .screenshots-grid { grid-template-columns: 1fr 1fr; }
+      .screenshot-item.tall { grid-row: span 1; }
+      .pricing { padding: 60px 24px; }
+      .pricing-cards { grid-template-columns: 1fr; }
+      footer { padding: 32px 24px; flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#"><span>Table</span>OS</a>
+    <a class="nav-cta" href="#pricing">Get Started</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-text">
+      <span class="hero-badge">Restaurant POS</span>
+      <h1>Run your restaurant <em>smarter,</em> not harder.</h1>
+      <p>dePOSit is a modern point-of-sale system built for restaurants, cafés, and food businesses. Manage orders, tables, inventory, and payments — all from one dashboard.</p>
+      <div class="hero-actions">
+        <a href="#pricing" class="btn-primary">Start Free Trial</a>
+        <a href="#features" class="btn-secondary">See Features</a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <!-- REPLACE src with your R2 image URL -->
+      <!-- <img src="https://YOUR_R2_URL/hero-dashboard.png" alt="dePOSit Dashboard" /> -->
+      <div class="img-placeholder">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+        <span>hero-dashboard.png</span>
+      </div>
+      <div class="float-badge">
+        <div class="float-badge-dot"></div>
+        <span class="float-badge-text">Live orders syncing</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-number">99.9%</div>
+      <div class="stat-label">Uptime guaranteed</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">&lt; 1s</div>
+      <div class="stat-label">Average order processing</div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <div class="section-header">
+      <p class="section-eyebrow">Everything you need</p>
+      <h2 class="section-title">Built for the floor,<br/>and the back of house.</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🪑</div>
+        <h3>Table Management</h3>
+        <p>Visual floor plan editor. Assign, merge, and split tables in real time. Seat guests faster and reduce wait confusion.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧾</div>
+        <h3>Smart Ordering</h3>
+        <p>Send orders directly to the kitchen display. Modifiers, variants, and special requests handled with zero friction.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💳</div>
+        <h3>Integrated Payments</h3>
+        <p>Accept cash, card, QRIS, and e-wallets. Split bills by seat or item. Powered by Xendit for local payment methods.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📦</div>
+        <h3>Multi Platform</h3>
+        <p>Access from web, native Android, or Desktop.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Sales Analytics</h3>
+        <p>Daily, weekly, and monthly revenue breakdowns. Know your top-selling dishes and peak hours at a glance.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREENSHOTS -->
+  <section class="screenshots">
+    <div class="section-header">
+      <p class="section-eyebrow">Product screenshots</p>
+      <h2 class="section-title">See it in action.</h2>
+    </div>
+    <div class="screenshots-grid">
+
+      <!-- TALL LEFT — replace src with R2 URL -->
+      <div class="screenshot-item tall">
+        <!-- <img src="https://YOUR_R2_URL/screen-orders.png" alt="Order screen" /> -->
+        <div class="img-placeholder">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <span>screen-orders.png</span>
+        </div>
+      </div>
+
+      <!-- TOP RIGHT — replace src with R2 URL -->
+      <div class="screenshot-item">
+        <!-- <img src="https://YOUR_R2_URL/screen-tables.png" alt="Table map" /> -->
+        <div class="img-placeholder">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <span>screen-tables.png</span>
+        </div>
+      </div>
+
+      <!-- BOTTOM RIGHT — replace src with R2 URL -->
+      <div class="screenshot-item">
+        <!-- <img src="https://YOUR_R2_URL/screen-analytics.png" alt="Analytics" /> -->
+        <div class="img-placeholder">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <span>screen-analytics.png</span>
+        </div>
+      </div>
+
+      <!-- BOTTOM FAR RIGHT — replace src with R2 URL -->
+      <div class="screenshot-item" style="grid-column: span 1;">
+        <!-- <img src="https://YOUR_R2_URL/screen-payment.png" alt="Payment screen" /> -->
+        <div class="img-placeholder">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <span>screen-payment.png</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing" id="pricing">
+    <div class="section-header">
+      <p class="section-eyebrow">Pricing</p>
+      <h2 class="section-title">Simple pricing,<br/>no surprises.</h2>
+    </div>
+    <div class="pricing-cards">
+      <div class="pricing-card">
+        <p class="plan-name">Starter</p>
+        <div class="price">Free</div>
+        <p class="price-sub">Up to 1 outlet · Forever free</p>
+        <ul>
+          <li>Table & order management</li>
+          <li>Basic sales reports</li>
+          <li>1 user account</li>
+          <li>Email support</li>
+        </ul>
+        <a href="#" class="btn-plan">Get Started Free</a>
+      </div>
+      <div class="pricing-card featured">
+        <p class="plan-name">Pro</p>
+        <div class="price">Rp 299k</div>
+        <p class="price-sub">per outlet / month</p>
+        <ul>
+          <li>Everything in Starter</li>
+          <li>Inventory tracking</li>
+          <li>Advanced analytics</li>
+          <li>Unlimited staff accounts</li>
+          <li>Priority support</li>
+        </ul>
+        <a href="#" class="btn-plan">Start 14-Day Trial</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo"><span>Table</span>OS</div>
+    <p>© 2025 dePOSit. All rights reserved.</p>
+    <p>lfn.panca@gmail.com</p>
+  </footer>
+
+</body>
+</html>
